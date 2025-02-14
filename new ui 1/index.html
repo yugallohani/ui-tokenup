@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TokenAI Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    rel="stylesheet"
+  />
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+  />
+  <style>
+    :root {
+      --bg-dark: #0f172a;
+      --bg-medium: #1e293b;
+      --accent-blue: #60a5fa;
+      --accent-cyan: #22d3ee;
+    }
+
+    body {
+      background: var(--bg-dark);
+      color: white;
+      min-height: 100vh;
+    }
+
+    .gradient-border {
+      position: relative;
+      background: var(--bg-medium);
+    }
+
+    .gradient-border::before {
+      content: "";
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      background: linear-gradient(
+        45deg,
+        var(--accent-blue),
+        var(--accent-cyan)
+      );
+      z-index: -1;
+      border-radius: 1rem;
+    }
+
+    .activity-card {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .activity-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(96, 165, 250, 0.1);
+    }
+
+    .token-badge {
+      background: linear-gradient(
+        45deg,
+        var(--accent-blue),
+        var(--accent-cyan)
+      );
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .certificate-img {
+      width: 100%;
+      max-width: 400px;
+      border-radius: 0.5rem;
+      margin-top: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="flex min-h-screen">
+    <!-- Sidebar -->
+    <aside class="w-64 bg-slate-900 p-6 border-r border-slate-800">
+      <div class="mb-12">
+        <h1
+          class="text-2xl font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent"
+        >
+          TokenAI
+        </h1>
+      </div>
+
+      <nav class="space-y-4">
+        <button
+          onclick="showSection('feed')"
+          class="w-full text-left p-3 rounded-lg hover:bg-slate-800 transition-colors"
+        >
+          <i class="fas fa-rss mr-3 text-blue-400"></i>Activity Feed
+        </button>
+        <button
+          onclick="showSection('leaderboard')"
+          class="w-full text-left p-3 rounded-lg hover:bg-slate-800 transition-colors"
+        >
+          <i class="fas fa-trophy mr-3 text-cyan-400"></i>Leaderboard
+        </button>
+        <button
+          onclick="showSection('profile')"
+          class="w-full text-left p-3 rounded-lg hover:bg-slate-800 transition-colors"
+        >
+          <i class="fas fa-user mr-3 text-purple-400"></i>Profile
+        </button>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 p-8">
+      <!-- Activity Feed -->
+      <div id="feed" class="space-y-6 animate__animated animate__fadeIn">
+        <div class="flex justify-between items-center mb-8">
+          <h2 class="text-2xl font-bold">Recent Activity</h2>
+          <button
+            onclick="showPostModal()"
+            class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg"
+          >
+            <i class="fas fa-plus mr-2"></i>New Achievement
+          </button>
+        </div>
+
+        <div id="activity-feed" class="space-y-4">
+          <!-- Activity cards will be added here dynamically -->
+        </div>
+      </div>
+
+      <!-- Leaderboard -->
+      <div id="leaderboard" class="hidden animate__animated animate__fadeIn">
+        <h2 class="text-2xl font-bold mb-8">Leaderboard</h2>
+        <div class="gradient-border p-6 rounded-xl">
+          <table class="w-full" id="leaderboard-table">
+            <thead>
+              <tr class="text-slate-400">
+                <th class="pb-4 text-left">Rank</th>
+                <th class="pb-4 text-left">User</th>
+                <th class="pb-4 text-right">Tokens</th>
+              </tr>
+            </thead>
+            <tbody id="leaderboard-body">
+              <!-- Leaderboard rows will be added here -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Profile -->
+      <div id="profile" class="hidden animate__animated animate__fadeIn">
+        <div class="gradient-border p-8 rounded-xl">
+          <div class="text-center mb-8">
+            <img
+              src="https://xsgames.co/randomusers/avatar.php?g=male&id=1"
+              class="w-32 h-32 rounded-full mx-auto mb-4 border-4 border-blue-400"
+              alt="Profile Picture"
+            />
+            <h2 class="text-2xl font-bold mb-2">John Doe</h2>
+            <div class="text-xl token-badge font-bold">⭐ 1,450 Tokens</div>
+          </div>
+
+          <div class="grid grid-cols-3 gap-6 text-center">
+            <div class="bg-slate-800 p-4 rounded-lg">
+              <div class="text-blue-400 text-xl mb-2">
+                <i class="fas fa-check-circle"></i>
+              </div>
+              <div class="font-bold text-lg">42</div>
+              <div class="text-slate-400">Achievements</div>
+            </div>
+            <div class="bg-slate-800 p-4 rounded-lg">
+              <div class="text-cyan-400 text-xl mb-2">
+                <i class="fas fa-medal"></i>
+              </div>
+              <div class="font-bold text-lg">15</div>
+              <div class="text-slate-400">Badges</div>
+            </div>
+            <div class="bg-slate-800 p-4 rounded-lg">
+              <div class="text-purple-400 text-xl mb-2">
+                <i class="fas fa-ranking-star"></i>
+              </div>
+              <div class="font-bold text-lg">#8</div>
+              <div class="text-slate-400">Rank</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Post Modal -->
+  <div
+    id="postModal"
+    class="fixed inset-0 bg-black/50 hidden items-center justify-center"
+  >
+    <div class="bg-slate-800 p-8 rounded-xl w-full max-w-md relative">
+      <h3 class="text-xl font-bold mb-6">Share Achievement</h3>
+      <textarea
+        id="postContent"
+        class="w-full bg-slate-900 rounded-lg p-4 mb-4"
+        rows="4"
+        placeholder="Describe your achievement..."
+      ></textarea>
+      <div class="flex justify-end gap-4">
+        <button
+          onclick="hidePostModal()"
+          class="px-4 py-2 rounded-lg hover:bg-slate-700"
+        >
+          Cancel
+        </button>
+        <button
+          onclick="createPost()"
+          class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg"
+        >
+          Post
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Sample Data
+
+    // Preload one achievement post (NPTEL Certification)
+    let activities = [
+      {
+        id: Date.now(),
+        content:
+          "I am thrilled to share that I've successfully completed the NPTEL Certification in Advanced Machine Learning! Check out my certificate below.",
+        likes: 12,
+        comments: [
+          { user: "Alice", comment: "Congratulations on this fantastic achievement!" },
+          { user: "Bob", comment: "Well deserved!" }
+        ],
+        shares: 3,
+        date: new Date().toLocaleDateString(),
+        user: {
+          name: "Jane Smith",
+          avatar:
+            "https://xsgames.co/randomusers/avatar.php?g=female&id=5",
+          verified: true
+        },
+        tokens: 2, // Auto awarded tokens
+        certificateImage:
+          "https://via.placeholder.com/400x250?text=NPTEL+Certificate"
+      }
+    ];
+
+    let leaderboard = [
+      {
+        name: "Alice Smith",
+        tokens: 2450,
+        avatar: "https://xsgames.co/randomusers/avatar.php?g=female&id=2"
+      },
+      {
+        name: "Bob Johnson",
+        tokens: 1890,
+        avatar: "https://xsgames.co/randomusers/avatar.php?g=male&id=3"
+      },
+      {
+        name: "Charlie Brown",
+        tokens: 1620,
+        avatar: "https://xsgames.co/randomusers/avatar.php?g=male&id=4"
+      }
+    ];
+
+    // UI Functions
+    function showSection(sectionId) {
+      document.querySelectorAll("main > div").forEach((div) => {
+        div.classList.add("hidden");
+      });
+      document.getElementById(sectionId).classList.remove("hidden");
+    }
+
+    function showPostModal() {
+      document.getElementById("postModal").classList.remove("hidden");
+    }
+
+    function hidePostModal() {
+      document.getElementById("postModal").classList.add("hidden");
+    }
+
+    function createPost() {
+      const content = document.getElementById("postContent").value;
+      if (!content) return;
+
+      const newPost = {
+        id: Date.now(),
+        content,
+        likes: 0,
+        comments: [],
+        shares: 0,
+        date: new Date().toLocaleDateString(),
+        user: {
+          name: "John Doe",
+          avatar:
+            "https://xsgames.co/randomusers/avatar.php?g=male&id=1",
+          verified: false
+        },
+        tokens: Math.floor(Math.random() * 5) + 1
+      };
+
+      activities.unshift(newPost);
+      updateActivityFeed();
+      hidePostModal();
+      document.getElementById("postContent").value = "";
+    }
+
+    function updateActivityFeed() {
+      const container = document.getElementById("activity-feed");
+      container.innerHTML = activities
+        .map((post) => {
+          return `
+          <div class="activity-card bg-slate-800 rounded-xl p-6">
+            <div class="flex items-start gap-4">
+              <img src="${post.user.avatar}" alt="Avatar"
+                   class="w-12 h-12 rounded-full border-2 border-blue-400">
+              <div class="flex-1">
+                <div class="flex items-center gap-2 mb-2">
+                  <h4 class="font-bold">${post.user.name}</h4>
+                  ${
+                    post.user.verified
+                      ? '<i class="fas fa-check-circle text-blue-400" title="Verified"></i>'
+                      : ""
+                  }
+                  <span class="text-slate-400 text-sm">• ${post.date}</span>
+                  <span class="ml-auto text-sm token-badge">+${post.tokens} Tokens</span>
+                </div>
+                <p class="text-slate-300 mb-4">${post.content}</p>
+                ${
+                  post.certificateImage
+                    ? `<img src="${post.certificateImage}" alt="Certificate" class="certificate-img">`
+                    : ""
+                }
+                <div class="flex items-center gap-6 text-slate-400 mt-4">
+                  <button onclick="handleLike(${post.id})" class="hover:text-blue-400">
+                    <i class="fas fa-heart mr-2"></i>${post.likes}
+                  </button>
+                  <button class="hover:text-cyan-400">
+                    <i class="fas fa-comment mr-2"></i>${post.comments.length}
+                  </button>
+                  <button onclick="handleShare(${post.id})" class="hover:text-green-400">
+                    <i class="fas fa-share mr-2"></i>${post.shares}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          `;
+        })
+        .join("");
+    }
+
+    function handleLike(postId) {
+      const post = activities.find((p) => p.id === postId);
+      if (post) post.likes++;
+      updateActivityFeed();
+    }
+
+    function handleShare(postId) {
+      const post = activities.find((p) => p.id === postId);
+      if (post) post.shares++;
+      updateActivityFeed();
+    }
+
+    function updateLeaderboard() {
+      const tbody = document.getElementById("leaderboard-body");
+      tbody.innerHTML = leaderboard
+        .map((user, index) => {
+          return `
+          <tr class="border-t border-slate-700">
+            <td class="py-4">${index + 1}</td>
+            <td class="py-4">
+              <div class="flex items-center gap-3">
+                <img src="${user.avatar}" alt="Avatar"
+                     class="w-10 h-10 rounded-full border-2 border-blue-400">
+                ${user.name}
+              </div>
+            </td>
+            <td class="py-4 text-right">⭐ ${user.tokens}</td>
+          </tr>
+          `;
+        })
+        .join("");
+    }
+
+    // Initial Setup
+    document.addEventListener("DOMContentLoaded", () => {
+      updateActivityFeed();
+      updateLeaderboard();
+    });
+  </script>
+</body>
+</html>
